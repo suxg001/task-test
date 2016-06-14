@@ -2,6 +2,8 @@ package com.qjs.task.service.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -25,27 +27,29 @@ public class SendMessageService implements ISendMessage {
 	@Autowired
 	private AllDaoImpl dao;
 
-	/**
-	 * 发送邮件
-	 * 
-	 * @param emailAddress
-	 * @param userName
-	 * @param maturityDate
-	 * @param amount
-	 */
-	public void sendMail(String emailAddress, String userName, String maturityDate, String amount) {
+	 /**
+	  * 发送邮件
+	  * @param emailAddress
+	  * @param message
+	  * @param setSubject
+	  */
+	public void sendMail(String emailAddress, String message,String setSubject) {
 		// TODO Auto-generated method stub
 		PropertyConfig.init("email.properties");
 
 		String springmailhost = PropertyConfig.getProperty(QjsConstants.SPRINGMAILHOST, "");
-		String springmailport =PropertyConfig.getProperty(QjsConstants.SPRINGMAILPORT,"");
-		String springmailprotocol = PropertyConfig.getProperty(QjsConstants.SPRINGMAILPROTOCOL,"");
-		String springmailusername = PropertyConfig.getProperty(QjsConstants.SPRINGMAILUSERNAME,"");
-		String springmailpassword = PropertyConfig.getProperty(QjsConstants.SPRINGMAILPASSWORD,"");
-		String springmailpropertiesmailtransportprotocol =PropertyConfig.getProperty(QjsConstants.SPRINGMAILPROPERTIESMAILTRANSPORTPROTOCOL,"");
-		String springmailpropertiesmailsmtpsauth =PropertyConfig.getProperty(QjsConstants.SPRINGMAILPROPERTIESMAILSMTPSAUTH,"");
-		String springmailpropertiesmailsmtpsstarttlsenable =PropertyConfig.getProperty(QjsConstants.SPRINGMAILPROPERTIESMAILSMTPSSTARTTLSENABLE,"");
-		String springmailpropertiesmailsmtpstimeout =PropertyConfig.getProperty(QjsConstants.SPRINGMAILPROPERTIESMAILSMTPSTIMEOUT,"");
+		String springmailport = PropertyConfig.getProperty(QjsConstants.SPRINGMAILPORT, "");
+		String springmailprotocol = PropertyConfig.getProperty(QjsConstants.SPRINGMAILPROTOCOL, "");
+		String springmailusername = PropertyConfig.getProperty(QjsConstants.SPRINGMAILUSERNAME, "");
+		String springmailpassword = PropertyConfig.getProperty(QjsConstants.SPRINGMAILPASSWORD, "");
+		String springmailpropertiesmailtransportprotocol = PropertyConfig
+				.getProperty(QjsConstants.SPRINGMAILPROPERTIESMAILTRANSPORTPROTOCOL, "");
+		String springmailpropertiesmailsmtpsauth = PropertyConfig
+				.getProperty(QjsConstants.SPRINGMAILPROPERTIESMAILSMTPSAUTH, "");
+		String springmailpropertiesmailsmtpsstarttlsenable = PropertyConfig
+				.getProperty(QjsConstants.SPRINGMAILPROPERTIESMAILSMTPSSTARTTLSENABLE, "");
+		String springmailpropertiesmailsmtpstimeout = PropertyConfig
+				.getProperty(QjsConstants.SPRINGMAILPROPERTIESMAILSMTPSTIMEOUT, "");
 		JavaMailSenderImpl senderImpl = new JavaMailSenderImpl();
 		// 设定mail server
 		senderImpl.setHost(springmailhost);
@@ -54,16 +58,16 @@ public class SendMessageService implements ISendMessage {
 		// 设置收件人，寄件人 用数组发送多个邮件
 		// String[] array = new String[] {"sun111@163.com","sun222@sohu.com"};
 		// mailMessage.setTo(array);
-		mailMessage.setTo(" 362073004@qq.com ");
+		mailMessage.setTo(emailAddress);
 		mailMessage.setFrom(springmailusername);
-		mailMessage.setSubject(" 测试简单文本邮件发送！ ");
-		mailMessage.setText(" 测试我的简单邮件发送机制！！ ");
+		mailMessage.setSubject(setSubject);
+		mailMessage.setText(message);
 
 		senderImpl.setUsername(springmailusername); // 根据自己的情况,设置username
 		senderImpl.setPassword(springmailpassword); // 根据自己的情况, 设置password
 
 		Properties prop = new Properties();
-		prop.put(" mail.smtp.auth ",   springmailpropertiesmailsmtpsauth); // 将这个参数设为true，让服务器进行认证,认证用户名和密码是否正确
+		prop.put(" mail.smtp.auth ", springmailpropertiesmailsmtpsauth); // 将这个参数设为true，让服务器进行认证,认证用户名和密码是否正确
 		prop.put(" mail.smtp.timeout ", springmailpropertiesmailsmtpstimeout);
 		senderImpl.setJavaMailProperties(prop);
 		// 发送邮件
@@ -83,35 +87,55 @@ public class SendMessageService implements ISendMessage {
 	}
 
 	@Override
+	@Transactional
 	public void sendUserMessage() {
 		// TODO Auto-generated method stub
-		List<SendMessageBean> dqInfoList = dao.querySendMessageList("", "");
+		try {
+			List<SendMessageBean> dqInfoList = dao.querySendMessageList("", "");
 
-		if (dqInfoList.size() > 0) {
-			System.out.println("========================" + dqInfoList.get(0).getSched_name());
-			System.out.println("========================" + dqInfoList.get(0).getCkname());
-			
-			for(int i=0;i<dqInfoList.size();i++){
-				String emailAddress=dqInfoList.get(i).getEmail(); 
-				String userName=dqInfoList.get(i).getJkname();
-				String maturityDate=dqInfoList.get(i).getMaturityDate();
-				String amount=dqInfoList.get(i).getAcount();
-			this.sendMail(emailAddress,userName,maturityDate,amount);
-			PropertyConfig.init("phone.properties");
-			String phones = PropertyConfig.getProperty("phone", "");
-		    String ckmessage=PropertyConfig.getProperty("ckmessage", "");
-			   Object [] ckfmtargs = {"xm0001","aaaaa", "8888888",};
-		        String ckphoneMessage=MessageFormat.format (ckmessage, ckfmtargs);
-//		        String uf8=new String(phoneMessage.getBytes("gb2312"),"utf-8");
-				this.savaPhoneMessage(phones.split(","), ckphoneMessage);
-				
-				//借款人短信发送
-			    String jkmessage=PropertyConfig.getProperty("jkmessage", "");
-			    Object [] jkfmtargs = {"xm0001","aaaaa", "8888888",};
-			    String jkphoneMessage=MessageFormat.format (ckmessage, ckfmtargs);
-				this.savaPhoneMessage(phones.split(","), jkphoneMessage);
+			if (dqInfoList.size() > 0) {
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				for (int i = 0; i < dqInfoList.size(); i++) {
+					if (dqInfoList.get(i).getDueDay7() != null && String.valueOf(dqInfoList.get(i).getDueDay7())
+							.indexOf(String.valueOf(simpleDateFormat.format(new Date()))) == 0) {
+						String emailAddress = dqInfoList.get(i).getEmail();
+						String userName = dqInfoList.get(i).getJkusername();
+						String maturityDate = String.valueOf(dqInfoList.get(i).getDueDay()).substring(0,10);
+						String amount = dqInfoList.get(i).getAcount();
+						String projectId = dqInfoList.get(i).getProjectId();
+						String jkphone = dqInfoList.get(i).getPhone();
+						PropertyConfig.init("phone.properties");
+						// 借款人短信发送
+						String jkmessage = PropertyConfig.getProperty("jkmessage", "");
+						Object[] jkfmtargs = { userName, maturityDate, amount };
+						String jkphoneMessage = MessageFormat.format(jkmessage, jkfmtargs);
+						String[] jkphones = { jkphone };
+						this.savaPhoneMessage(jkphones, jkphoneMessage);
+						// 借款人邮件发送
+						this.sendMail(emailAddress, jkphoneMessage,"还款提醒");
+
+						// 催款人短信发送
+					
+						String phones = PropertyConfig.getProperty("phone", "");
+						String ckmessage = PropertyConfig.getProperty("ckmessage", "");
+						Object[] ckfmtargs = { projectId, amount,maturityDate};
+						String ckphoneMessage = MessageFormat.format(ckmessage, ckfmtargs);
+						this.savaPhoneMessage(phones.split(","), ckphoneMessage);
+
+						// 催款人邮件发送
+						String ckemail = PropertyConfig.getProperty("ckemail", "");
+						String[] ckemails = ckemail.split(",");
+						for (int j = 0; j < ckemails.length; j++) {
+							this.sendMail(ckemails[j], ckphoneMessage,"催款提醒");
+						}
+						// String uf8=new
+						// String(phoneMessage.getBytes("gb2312"),"utf-8");
+
+					}
+				}
 			}
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
-
 }

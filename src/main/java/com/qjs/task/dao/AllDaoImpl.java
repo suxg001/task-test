@@ -91,8 +91,15 @@ public class AllDaoImpl {
 	}
 	
 	public List<SendMessageBean> querySendMessageList(String today,String lastDay){
-		String sql="select sched_name, sched_name  ckname,trigger_name   FROM qrtz_cron_triggers ";
-		List<SendMessageBean> messageList = commonDAO.getEntityList(sql,SendMessageBean.class);
+//		String sql="select sched_name, sched_name  ckname,trigger_name   FROM qrtz_cron_triggers ";
+		StringBuffer strBuffer=new StringBuffer();
+		strBuffer.append(" SELECT a.project_id projectId, c.contact_person jkusername,(DATE_ADD(a.due_day, INTERVAL -7 DAY)) dueDay7,a.due_day dueDay,a.due_capital_interest  acount,");
+		strBuffer.append("	c.register_phone phone,c.company_email email"); 
+		strBuffer.append(" FROM ");
+		strBuffer.append(" jk_repayment a INNER JOIN  jk_project b ON a.project_id=b.project_id ");   
+		strBuffer.append(" INNER JOIN  jk_third_company c ON  b.borrow_company_id=c.company_id ");
+		System.out.println("##########################"+strBuffer.toString());
+		List<SendMessageBean> messageList = commonDAO.getEntityList(strBuffer.toString(),SendMessageBean.class);
 	
 		return messageList;
 	}

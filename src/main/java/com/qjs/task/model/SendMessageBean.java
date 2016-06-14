@@ -1,8 +1,7 @@
 package com.qjs.task.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * 
@@ -12,46 +11,58 @@ import javax.persistence.Table;
  
 public class SendMessageBean {
 	
-    private String sched_name;
-	public String getSched_name() {
-		return sched_name;
-	}
-
-	public void setSched_name(String sched_name) {
-		this.sched_name = sched_name;
-	}
-
-	private String browid; // 标号
+  
+	private String projectId; // 标号
 	
- 
-	private String email;// 邮件地址
-
-	private String phone;// 手机号
-
-	private String ckname;// 催款人姓名
-
-	private String jkname;// 借款人姓名
-   
-	private String maturityDate;//到期时间
-	public String getMaturityDate() {
-		return maturityDate;
+	private String jkusername;// 借款人姓名
+	
+	private String dueDay; //到期日
+	
+	private String  dueDay7; //到期前7日
+	
+	public String getDueDay7() {
+		return dueDay7;
 	}
 
-	public void setMaturityDate(String maturityDate) {
-		this.maturityDate = maturityDate;
+	public void setDueDay7(String dueDay7) {
+		this.dueDay7 = dueDay7;
 	}
 
-	private String jkgs;// 借款人公司
-	private String sex;// 性别
+	private String acount;// 金额 （应还本息金额）
+	private String email;// 借款人邮件地址
 
-	private String acount;// 金额
+	private String phone;// 借款人手机号
 
-	public String getBrowid() {
-		return browid;
+	public String getProjectId() {
+		return projectId;
 	}
 
-	public void setBrowid(String browid) {
-		this.browid = browid;
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
+	}
+
+	public String getJkusername() {
+		return jkusername;
+	}
+
+	public void setJkusername(String jkusername) {
+		this.jkusername = jkusername;
+	}
+
+	public String getDueDay() {
+		return dueDay;
+	}
+
+	public void setDueDay(String dueDay) {
+		this.dueDay = dueDay;
+	}
+
+	public String getAcount() {
+		return acount;
+	}
+
+	public void setAcount(String acount) {
+		this.acount = acount;
 	}
 
 	public String getEmail() {
@@ -70,44 +81,5 @@ public class SendMessageBean {
 		this.phone = phone;
 	}
 
-	public String getCkname() {
-		return ckname;
-	}
-
-	public void setCkname(String ckname) {
-		this.ckname = ckname;
-	}
-
-	public String getJkname() {
-		return jkname;
-	}
-
-	public void setJkname(String jkname) {
-		this.jkname = jkname;
-	}
-
-	public String getJkgs() {
-		return jkgs;
-	}
-
-	public void setJkgs(String jkgs) {
-		this.jkgs = jkgs;
-	}
-
-	public String getSex() {
-		return sex;
-	}
-
-	public void setSex(String sex) {
-		this.sex = sex;
-	}
-
-	public String getAcount() {
-		return acount;
-	}
-
-	public void setAcount(String acount) {
-		this.acount = acount;
-	}
-
-}
+	
+   }
